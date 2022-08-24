@@ -15,8 +15,8 @@ randomString() {
 
 ## Install Fail2ban
 echo -e "${LIGHTBLUE}INSTALL FAIL2BAN${NC}"
-#sudo apt update
-#sudo apt install fail2ban
+sudo apt update
+sudo apt install fail2ban
 
 echo -e "${LIGHTPURPLE}✔ Fail2ban installed${NC}"
 
@@ -70,7 +70,7 @@ echo -e "${LIGHTPURPLE}✔ Database created and setup${NC}"
 
 ## Setup GeoIP DB
 echo -e "${LIGHTBLUE}INSTALL GEOIP${NC}"
-#sudo apt-get -y install geoip-bin geoip-database
+sudo apt-get -y install geoip-bin geoip-database
 
 echo -e "${LIGHTPURPLE}✔ GEOIP installed${NC}"
 
