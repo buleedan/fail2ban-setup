@@ -13,22 +13,30 @@ randomString() {
   LC_ALL=C tr -dc 'A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_{|}~' </dev/urandom | head -c 32 ; echo
 }
 
+##
 ## Install Fail2ban
+##
 echo -e "${LIGHTBLUE}INSTALL FAIL2BAN${NC}"
 sudo apt update
 sudo apt install fail2ban
 
 echo -e "${LIGHTPURPLE}✔ Fail2ban installed${NC}"
 
+##
 ## Add custom filters
+##
 echo -e "${LIGHTBLUE}ADD CUSTOM FILTERS${NC}"
 
 echo -e "${LIGHTPURPLE}✔ Custom filters added${NC}"
 
+##
 ## Setup DB
+##
 echo -e "${LIGHTBLUE}SETUP DATABASE${NC}"
 
 DB_TEMPLATE=/tmp/fail2ban.mysql;
+DB_HOST=127.0.0.1
+DB_PORT=3306
 DATABASE="fail2ban"
 DB_USER="fail2ban"
 DB_PASSWORD=$(randomString)
@@ -52,13 +60,27 @@ fi
 
 echo -e "+"
 echo -e "| Database Setup"
-echo -e "| - Host    : 127.0.0.1"
-echo -e "| - Port    : 3306"
+echo -e "| - Host    : ${DB_HOST}"
+echo -e "| - Port    : ${DB_PORT}"
 echo -e "| - Database: ${DATABASE}"
 echo -e "| - User    : ${DB_USER}"
 echo -e "| - Password: ${DB_PASSWORD}"
 echo -e "+"
 
+echo -e "${LIGHTPURPLE}✔ Database created and setup${NC}"
+
+##
+## Setup GeoIP DB
+##
+echo -e "${LIGHTBLUE}INSTALL GEOIP${NC}"
+sudo apt-get -y install geoip-bin geoip-database
+
+echo -e "${LIGHTPURPLE}✔ GEOIP installed${NC}"
+
+##
+## Setup connection to DB
+##
+echo -e "${LIGHTBLUE}SETUP CONNECTION TO DATABASE${NC}"
 wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/database/banned_db.conf
 sudo mv banned_db.conf /etc/fail2ban/action.d/
 
@@ -66,20 +88,25 @@ wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/database/f
 sudo mv fail2ban_banned_db /usr/local/bin/
 sudo chmod 0550 /usr/local/bin/fail2ban_banned_db
 
-echo -e "${LIGHTPURPLE}✔ Database created and setup${NC}"
-
-## Setup GeoIP DB
-echo -e "${LIGHTBLUE}INSTALL GEOIP${NC}"
-sudo apt-get -y install geoip-bin geoip-database
-
-echo -e "${LIGHTPURPLE}✔ GEOIP installed${NC}"
-
-## Setup connection to DB
-echo -e "${LIGHTBLUE}SETUP CONNECTION TO DATABASE${NC}"
+sudo printf "[client]\nhost=\"${DB_HOST}\"\nport=\"${DB_PORT}\"\nuser=\"${DB_USER}\"\npassword=\"${DB_PASSWORD}\"" > /root/.my.cnf-fail2ban >
 
 echo -e "${LIGHTPURPLE}✔ Connection to Database set${NC}"
+
+##
 ## Custom local jail
+##
 echo -e "${LIGHTBLUE}SETUP CUSTOM LOCAL JAIL${NC}"
+wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/conf.d/jail.local
+sudo mv fail2ban_banned_db /etc/fail2ban
 
 echo -e "${LIGHTPURPLE}✔ Custom local jail setup${NC}"
+
+##
+## Custom local jail
+##
+echo -e "${LIGHTBLUE}START FAIL2BAN${NC}"
+sudo fail2ban-client start
+
+echo -e "${LIGHTPURPLE}✔ Fail2ban started${NC}"
+
 echo -e "${LIGHTGREEN}== Fail2ban setup finished ==${NC}"
