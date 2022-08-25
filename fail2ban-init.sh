@@ -61,15 +61,6 @@ else
   mysql -uroot -p${MYSQL_PSWD} -e "SOURCE /tmp/fail2ban.mysql;"
 fi
 
-echo -e "+"
-echo -e "| Database Setup"
-echo -e "| - Host    : ${DB_HOST}"
-echo -e "| - Port    : ${DB_PORT}"
-echo -e "| - Database: ${DATABASE}"
-echo -e "| - User    : ${DB_USER}"
-echo -e "| - Password: ${DB_PASSWORD}"
-echo -e "+"
-
 echo -e "${LIGHTPURPLE}✔ Database created and setup${NC}"
 
 ##
@@ -126,3 +117,12 @@ sudo fail2ban-client start
 echo -e "${LIGHTPURPLE}✔ Fail2ban started${NC}"
 
 echo -e "${LIGHTGREEN}== Fail2ban setup finished ==${NC}"
+echo -e ""
+echo -e "+"
+echo -e "| Database Setup"
+echo -e "| - Host    : ${DB_HOST}"
+echo -e "| - Port    : ${DB_PORT}"
+echo -e "| - Database: ${DATABASE}"
+echo -e "| - User    : ${DB_USER}"
+echo -e "| - Password: ${DB_PASSWORD}"
+echo -e "+"
