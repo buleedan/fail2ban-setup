@@ -88,7 +88,13 @@ wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/database/f
 sudo mv fail2ban_banned_db /usr/local/bin/
 sudo chmod 0550 /usr/local/bin/fail2ban_banned_db
 
-sudo printf "[client]\nhost=\"${DB_HOST}\"\nport=\"${DB_PORT}\"\nuser=\"${DB_USER}\"\npassword=\"${DB_PASSWORD}\"" > /root/.my.cnf-fail2ban >
+sudo cat >/root/.my.cnf-fail2ban << EOL
+[client]
+host="${DB_HOST}"
+port="${DB_PORT}"
+user="${DB_USER}"
+password="${DB_PASSWORD}"
+EOL
 
 echo -e "${LIGHTPURPLE}✔ Connection to Database set${NC}"
 
