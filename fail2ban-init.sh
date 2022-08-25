@@ -13,28 +13,46 @@ randomString() {
   LC_ALL=C tr -dc 'A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_{|}~' </dev/urandom | head -c 32 ; echo
 }
 
+echoTitle(){
+  echo -e "${LIGHTBLUE}$1${NC}"
+}
+
+echoInfo(){
+  echo -e "${LIGHTPURPLE}$1${NC}"
+}
+
+echoSuccess(){
+  echo -e "${LIGHTGREEN}$1${NC}"
+}
+
+echoError(){
+  echo -e "${LIGHTRED}$1${NC}"
+}
+
 ##
 ## Install Fail2ban
 ##
-echo -e "${LIGHTBLUE}INSTALL FAIL2BAN${NC}"
-echo -e "${LIGHTPURPLE}Update apt repo${NC}"
+echoTitle "INSTALL FAIL2BAN"
+
+echoInfo "Update apt repo"
 sudo apt -y update
-echo -e "${LIGHTPURPLE}Install Fail2ban${NC}"
+
+eechoInfo "Install Fail2ban"
 sudo apt -y install fail2ban
 
-echo -e "${LIGHTPURPLE}✔ Fail2ban installed${NC}"
+echoInfo "✔ Fail2ban installed"
 
 ##
 ## Add custom filters
 ##
-echo -e "${LIGHTBLUE}ADD CUSTOM FILTERS${NC}"
+echoTitle "ADD CUSTOM FILTERS"
 
-echo -e "${LIGHTPURPLE}✔ Custom filters added${NC}"
+echoInfo "✔ Custom filters added"
 
 ##
 ## Setup DB
 ##
-echo -e "${LIGHTBLUE}SETUP DATABASE${NC}"
+echoTitle "SETUP DATABASE"
 
 if type mysql >/dev/null 2>&1; then
     DB_HOST=127.0.0.1
@@ -44,10 +62,10 @@ if type mysql >/dev/null 2>&1; then
     DB_PASSWORD=$(randomString)
 
     cd /tmp
-    echo -e "${LIGHTPURPLE}Download MYSQL database creation script${NC}"
+    echoInfo "Download MYSQL database creation script"
     wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/database/fail2ban.mysql
 
-    echo -e "${LIGHTPURPLE}Create ${DATABASE} database and user${NC}"
+    echoInfo "Create ${DATABASE} database and user"
     if [ -f /root/.my.cnf ]; then
         mysql -e "CREATE DATABASE ${DATABASE} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
         mysql -e "GRANT ALL ON ${DATABASE}.* TO '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
@@ -64,33 +82,36 @@ if type mysql >/dev/null 2>&1; then
         mysql -uroot -p${MYSQL_PSWD} ${DATABASE} < /tmp/fail2ban.mysql
     fi
 
-    echo -e "${LIGHTPURPLE}✔ Database created and setup${NC}"
+    echoInfo "✔ Database created and setup"
 
     ##
     ## Setup GeoIP DB
     ##
-    echo -e "${LIGHTBLUE}INSTALL GEOIP${NC}"
+    echoTitle "INSTALL GEOIP"
     sudo apt-get -y install geoip-bin geoip-database
 
-    echo -e "${LIGHTPURPLE}✔ GEOIP installed${NC}"
+    echoInfo "✔ GEOIP installed"
 
     ##
     ## Setup connection to DB
     ##
-    echo -e "${LIGHTBLUE}SETUP CONNECTION TO DATABASE${NC}"
-    echo -e "${LIGHTPURPLE}Download fail2ban configuration${NC}"
+    echoTitle "SETUP CONNECTION TO DATABASE"
+    echoInfo "Download fail2ban configuration"
     wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/database/banned_db.conf
-    echo -e "${LIGHTPURPLE}Move banned_db.conf to the right directory${NC}"
+
+    echoInfo "Move banned_db.conf to the right directory"
     sudo mv banned_db.conf /etc/fail2ban/action.d/
 
-    echo -e "${LIGHTPURPLE}Download fail2ban DB script${NC}"
+    echoInfo "Download fail2ban DB script"
     wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/database/fail2ban_banned_db
-    echo -e "${LIGHTPURPLE}Move fail2ban_banned_db to the right directory${NC}"
+
+    echoInfo"Move fail2ban_banned_db to the right directory"
     sudo mv fail2ban_banned_db /usr/local/bin/
-    echo -e "${LIGHTPURPLE}Set banned_db.conf CHMOD${NC}"
+
+    echoInfo "Set banned_db.conf CHMOD"
     sudo chmod 0550 /usr/local/bin/fail2ban_banned_db
 
-    echo -e "${LIGHTPURPLE}Generate MYSQL connection configuration file for fail2ban${NC}"
+    echoInfo "Generate MYSQL connection configuration file for fail2ban"
     sudo cat >/root/.my.cnf-fail2ban <<EOL
       [client]
       host="${DB_HOST}"
@@ -99,17 +120,19 @@ if type mysql >/dev/null 2>&1; then
       password="${DB_PASSWORD}"
 EOL
 
-    echo -e "${LIGHTPURPLE}✔ Connection to Database set${NC}"
+    echoInfo "✔ Connection to Database set"
 
     ##
     ## Custom local jail
     ##
-    echo -e "${LIGHTBLUE}SETUP CUSTOM LOCAL JAIL${NC}"
+    echoTitle "SETUP CUSTOM LOCAL JAIL"
+    echoInfo "Download custom jail.local"
     wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/jail.d/jail.local
-    echo -e "${LIGHTPURPLE}Move jail.local to the right directory${NC}"
+
+    echoInfo "Move jail.local to the right directory"
     sudo mv jail.local /etc/fail2ban
 
-    echo -e "${LIGHTPURPLE}✔ Custom local jail setup${NC}"
+    echoInfo "✔ Custom local jail setup"
 
     echo -e ""
     echo -e "+"
@@ -122,20 +145,20 @@ EOL
     echo -e "+"
 
 else
-    echo -e "${LIGHTRED}+---------------------------------------------+${NC}"
-    echo -e "${LIGHTRED}| MySQL not installed !!                      |${NC}"
-    echo -e "${LIGHTRED}| Fail2Ban database and configuration skipped |${NC}"
-    echo -e "${LIGHTRED}+---------------------------------------------+${NC}"
+    echoError "+---------------------------------------------+"
+    echoError "| MySQL not installed !!                      |"
+    echoError "| Fail2Ban database and configuration skipped |"
+    echoError "+---------------------------------------------+"
 fi
 
 ##
 ## Custom local jail
 ##
-echo -e "${LIGHTBLUE}START FAIL2BAN${NC}"
+echoTitle "START FAIL2BAN"
 sudo fail2ban-client start
 
-echo -e "${LIGHTPURPLE}✔ Fail2ban started${NC}"
+echoInfo "✔ Fail2ban started"
 
-echo -e "${LIGHTGREEN}+-------------------------+${NC}"
-echo -e "${LIGHTGREEN}| Fail2ban setup finished |${NC}"
-echo -e "${LIGHTGREEN}+-------------------------+${NC}"
+echoSuccess "+-------------------------+"
+echoSuccess "| Fail2ban setup finished |"
+echoSuccess "+-------------------------+"
