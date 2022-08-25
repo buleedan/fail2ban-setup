@@ -51,7 +51,7 @@ if [ -f /root/.my.cnf ]; then
   mysql -e "CREATE DATABASE ${DATABASE} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
   mysql -e "GRANT ALL ON ${DATABASE}.* TO '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
   mysql -e "USE ${DATABASE};"
-  mysql -e "SOURCE ${DB_TEMPLATE}"
+  mysql -e "SOURCE /tmp/fail2ban.mysql;"
 else
   read -sp "MySQL root password: " MYSQL_PSWD
   echo -e ""
