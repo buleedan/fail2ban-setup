@@ -55,7 +55,7 @@ else
   mysql -uroot -p${MYSQL_PSWD} -e "CREATE DATABASE ${DATABASE} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
   mysql -uroot -p${MYSQL_PSWD} -e "GRANT ALL ON ${DATABASE}.* TO '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
   mysql -uroot -p${MYSQL_PSWD} -e "USE ${DATABASE};"
-  mysql -uroot -p${MYSQL_PSWD} -e "SOURCE ${DB_TEMPLATE}"
+  mysql -uroot -p${MYSQL_PSWD} -e "SOURCE ${DB_TEMPLATE};"
 fi
 
 echo -e "+"
