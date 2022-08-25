@@ -102,7 +102,7 @@ echo -e "${LIGHTPURPLE}✔ Connection to Database set${NC}"
 ## Custom local jail
 ##
 echo -e "${LIGHTBLUE}SETUP CUSTOM LOCAL JAIL${NC}"
-wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/conf.d/jail.local
+wget https://raw.githubusercontent.com/buleedan/fail2ban-setup/master/jail.d/jail.local
 sudo mv jail.local /etc/fail2ban
 
 echo -e "${LIGHTPURPLE}✔ Custom local jail setup${NC}"
